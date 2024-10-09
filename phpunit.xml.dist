@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    backupGlobals="false"
+    beStrictAboutOutputDuringTests="true"
+    bootstrap="vendor/codeigniter4/framework/system/Test/bootstrap.php"
+    cacheDirectory="build/.phpunit.cache"
+    colors="true"
+    columns="max"
+    executionOrder="random"
+    failOnRisky="true"
+    failOnWarning="true"
+>
+    <source>
+        <include>
+            <directory suffix=".php">src/</directory>
+        </include>
+    </source>
+    <testsuites>
+		<testsuite name="main">
+			<directory>tests/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

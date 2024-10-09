@@ -1,0 +1,42 @@
+{
+    "name": "neznaika0/codeigniter-lang-finder",
+    "description": "Find the translation keys in your project",
+    "type": "library",
+    "require": {
+        "nikic/php-parser": "^5.3"
+    },
+    "require-dev": {
+        "codeigniter4/framework": "^4.5",
+        "codeigniter/coding-standard": "^1.7",
+        "phpunit/phpunit": "^11.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Neznaika0\\LangFinder\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "neznaika0",
+            "email": "ozornick.ks@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "scripts": {
+        "cs": [
+            "Composer\\Config::disableProcessTimeout",
+            "vendor/bin/php-cs-fixer check --ansi --verbose --diff"
+        ],
+        "cs-fix": [
+            "Composer\\Config::disableProcessTimeout",
+            "vendor/bin/php-cs-fixer fix --ansi --verbose --diff"
+        ],
+        "test": "vendor/bin/phpunit"
+    }
+}
