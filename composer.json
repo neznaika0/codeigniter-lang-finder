@@ -16,6 +16,11 @@
             "Neznaika0\\LangFinder\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+          "Neznaika0\\LangFinder\\Tests\\Support\\": "tests/_support"
+        }
+    },
     "authors": [
         {
             "name": "neznaika0",
