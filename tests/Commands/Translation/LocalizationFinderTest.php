@@ -34,6 +34,15 @@ final class LocalizationFinderTest extends CIUnitTestCase
         $this->clearGeneratedFiles();
     }
 
+    public function testNew(): void
+    {
+        $this->makeLocaleDirectory();
+
+        command('lang:find');
+
+        $this->assertTranslationsExistAndHaveTranslatedKeys();
+    }
+
     public function testUpdateDefaultLocale(): void
     {
         $this->makeLocaleDirectory();
@@ -115,11 +124,11 @@ final class LocalizationFinderTest extends CIUnitTestCase
     {
         $langFinder = new LocalizationFinder(service('logger'), service('commands'));
 
-        $file = new SplFileInfo(SUPPORTPATH . 'Services/Translation/TranslationOne.php');
+        $file = new SplFileInfo(SUPPORTPATH . 'Sources/Translation/TranslationOne.php');
 
         $this->assertFalse($this->getPrivateMethodInvoker($langFinder, 'isIgnoredFile')($file));
 
-        $dir = new SplFileInfo(SUPPORTPATH . 'Services/Translation');
+        $dir = new SplFileInfo(SUPPORTPATH . 'Sources/Translation');
 
         $this->assertTrue($this->getPrivateMethodInvoker($langFinder, 'isIgnoredFile')($dir));
 
@@ -186,57 +195,85 @@ final class LocalizationFinderTest extends CIUnitTestCase
         ];
     }
 
+    private function getActualTranslationFiveKeys(): array
+    {
+        return [
+            'action' => 'TranslationFive.action...{0} {1} {2} {filter} {page} {search}',
+            'users'  => [
+                'action' => 'TranslationFive.users.action...{0} {1} {2} {filter} {page} {search}',
+                'post'   => 'TranslationFive.users.post...{0} {?} {page}',
+            ],
+        ];
+    }
+
+    private function getActualTranslationCyrillicKeys(): array
+    {
+        return [
+            'список' => [
+                'действие' => 'Статья.список.действие...{0} {?} {page}',
+            ],
+        ];
+    }
+
     private function getActualTableWithNewKeys(): string
     {
         return <<<'TEXT_WRAP'
-            +------------------+----------------------------------------------------+
-            | File             | Key                                                |
-            +------------------+----------------------------------------------------+
-            | Translation-Four | Translation-Four.dashed.key-with-dash              |
-            | Translation-Four | Translation-Four.dashed.key-with-dash-two          |
-            | TranslationOne   | TranslationOne.Copyright                           |
-            | TranslationOne   | TranslationOne.DESCRIPTION                         |
-            | TranslationOne   | TranslationOne.last_operation_success              |
-            | TranslationOne   | TranslationOne.metaTags                            |
-            | TranslationOne   | TranslationOne.overflow_style                      |
-            | TranslationOne   | TranslationOne.subTitle                            |
-            | TranslationOne   | TranslationOne.title                               |
-            | TranslationThree | TranslationThree.alerts.CANCELED                   |
-            | TranslationThree | TranslationThree.alerts.DELETED                    |
-            | TranslationThree | TranslationThree.alerts.Updated                    |
-            | TranslationThree | TranslationThree.alerts.created                    |
-            | TranslationThree | TranslationThree.alerts.failed_insert              |
-            | TranslationThree | TranslationThree.alerts.missing_keys               |
-            | TranslationThree | TranslationThree.formErrors.edit.INVALID_TEXT      |
-            | TranslationThree | TranslationThree.formErrors.edit.empty_name        |
-            | TranslationThree | TranslationThree.formErrors.edit.missing_short_tag |
-            | TranslationThree | TranslationThree.formFields.edit.TEXT              |
-            | TranslationThree | TranslationThree.formFields.edit.name              |
-            | TranslationThree | TranslationThree.formFields.edit.short_tag         |
-            | TranslationThree | TranslationThree.formFields.new.TEXT               |
-            | TranslationThree | TranslationThree.formFields.new.name               |
-            | TranslationThree | TranslationThree.formFields.new.short_tag          |
-            +------------------+----------------------------------------------------+
+            +------------------+---------------------------------------------------------------------+
+            | File             | Key                                                                 |
+            +------------------+---------------------------------------------------------------------+
+            | Translation-Four | Translation-Four.dashed.key-with-dash                               |
+            | Translation-Four | Translation-Four.dashed.key-with-dash-two                           |
+            | TranslationFive  | TranslationFive.action...{0} {1} {2} {filter} {page} {search}       |
+            | TranslationFive  | TranslationFive.users.action...{0} {1} {2} {filter} {page} {search} |
+            | TranslationFive  | TranslationFive.users.post...{0} {?} {page}                         |
+            | TranslationOne   | TranslationOne.Copyright                                            |
+            | TranslationOne   | TranslationOne.DESCRIPTION                                          |
+            | TranslationOne   | TranslationOne.last_operation_success                               |
+            | TranslationOne   | TranslationOne.metaTags                                             |
+            | TranslationOne   | TranslationOne.overflow_style                                       |
+            | TranslationOne   | TranslationOne.subTitle                                             |
+            | TranslationOne   | TranslationOne.title                                                |
+            | TranslationThree | TranslationThree.alerts.CANCELED                                    |
+            | TranslationThree | TranslationThree.alerts.DELETED                                     |
+            | TranslationThree | TranslationThree.alerts.Updated                                     |
+            | TranslationThree | TranslationThree.alerts.created                                     |
+            | TranslationThree | TranslationThree.alerts.failed_insert                               |
+            | TranslationThree | TranslationThree.alerts.missing_keys                                |
+            | TranslationThree | TranslationThree.formErrors.edit.INVALID_TEXT                       |
+            | TranslationThree | TranslationThree.formErrors.edit.empty_name                         |
+            | TranslationThree | TranslationThree.formErrors.edit.missing_short_tag                  |
+            | TranslationThree | TranslationThree.formFields.edit.TEXT                               |
+            | TranslationThree | TranslationThree.formFields.edit.name                               |
+            | TranslationThree | TranslationThree.formFields.edit.short_tag                          |
+            | TranslationThree | TranslationThree.formFields.new.TEXT                                |
+            | TranslationThree | TranslationThree.formFields.new.name                                |
+            | TranslationThree | TranslationThree.formFields.new.short_tag                           |
+            | Статья           | Статья.список.действие...{0} {?} {page}                             |
+            +------------------+---------------------------------------------------------------------+
             TEXT_WRAP;
     }
 
     private function getActualTableWithBadKeys(): string
     {
         return <<<'TEXT_WRAP'
-            +------------------------+---------------------+
-            | Bad Key                | Filepath            |
-            +------------------------+---------------------+
-            | ..invalid_nested_key.. | /TranslationTwo.php |
-            | ..invalid_nested_key.. | /TranslationTwo.php |
-            | .invalid_key           | /TranslationTwo.php |
-            | .invalid_key           | /TranslationTwo.php |
-            | TranslationTwo         | /TranslationTwo.php |
-            | TranslationTwo         | /TranslationTwo.php |
-            | TranslationTwo.        | /TranslationTwo.php |
-            | TranslationTwo.        | /TranslationTwo.php |
-            | TranslationTwo...      | /TranslationTwo.php |
-            | TranslationTwo...      | /TranslationTwo.php |
-            +------------------------+---------------------+
+            +------------------------+--------------------+
+            | Bad Key                | Filepath           |
+            +------------------------+--------------------+
+            |                        | TranslationTwo.php |
+            |                        | TranslationTwo.php |
+            |                        | TranslationTwo.php |
+            |                        | TranslationTwo.php |
+            | ..invalid_nested_key.. | TranslationTwo.php |
+            | ..invalid_nested_key.. | TranslationTwo.php |
+            | .invalid_key           | TranslationTwo.php |
+            | .invalid_key           | TranslationTwo.php |
+            | TranslationTwo         | TranslationTwo.php |
+            | TranslationTwo         | TranslationTwo.php |
+            | TranslationTwo.        | TranslationTwo.php |
+            | TranslationTwo.        | TranslationTwo.php |
+            | TranslationTwo...      | TranslationTwo.php |
+            | TranslationTwo...      | TranslationTwo.php |
+            +------------------------+--------------------+
             TEXT_WRAP;
     }
 
@@ -245,14 +282,20 @@ final class LocalizationFinderTest extends CIUnitTestCase
         $this->assertFileExists(self::$languageTestPath . self::$locale . '/TranslationOne.php');
         $this->assertFileExists(self::$languageTestPath . self::$locale . '/TranslationThree.php');
         $this->assertFileExists(self::$languageTestPath . self::$locale . '/Translation-Four.php');
+        $this->assertFileExists(self::$languageTestPath . self::$locale . '/TranslationFive.php');
+        $this->assertFileExists(self::$languageTestPath . self::$locale . '/Статья.php');
 
-        $translationOneKeys   = require self::$languageTestPath . self::$locale . '/TranslationOne.php';
-        $translationThreeKeys = require self::$languageTestPath . self::$locale . '/TranslationThree.php';
-        $translationFourKeys  = require self::$languageTestPath . self::$locale . '/Translation-Four.php';
+        $translationOneKeys      = require self::$languageTestPath . self::$locale . '/TranslationOne.php';
+        $translationThreeKeys    = require self::$languageTestPath . self::$locale . '/TranslationThree.php';
+        $translationFourKeys     = require self::$languageTestPath . self::$locale . '/Translation-Four.php';
+        $translationFiveKeys     = require self::$languageTestPath . self::$locale . '/TranslationFive.php';
+        $translationCyrillicKeys = require self::$languageTestPath . self::$locale . '/Статья.php';
 
         $this->assertSame($translationOneKeys, $this->getActualTranslationOneKeys());
         $this->assertSame($translationThreeKeys, $this->getActualTranslationThreeKeys());
         $this->assertSame($translationFourKeys, $this->getActualTranslationFourKeys());
+        $this->assertSame($translationFiveKeys, $this->getActualTranslationFiveKeys());
+        $this->assertSame($translationCyrillicKeys, $this->getActualTranslationCyrillicKeys());
     }
 
     private function makeLocaleDirectory(): void
@@ -266,6 +309,8 @@ final class LocalizationFinderTest extends CIUnitTestCase
             self::$languageTestPath . self::$locale . '/TranslationOne.php',
             self::$languageTestPath . self::$locale . '/TranslationThree.php',
             self::$languageTestPath . self::$locale . '/Translation-Four.php',
+            self::$languageTestPath . self::$locale . '/TranslationFive.php',
+            self::$languageTestPath . self::$locale . '/Статья.php',
             self::$languageTestPath . self::$locale,
             self::$languageTestPath . '/test_locale_incorrect',
         ];
