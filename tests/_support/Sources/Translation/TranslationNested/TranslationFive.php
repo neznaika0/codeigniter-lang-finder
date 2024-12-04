@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Neznaika0\LangFinder\Tests\Support\Sources\TranslationNested;
+namespace Neznaika0\LangFinder\Tests\Support\Sources\Translation\TranslationNested;
 
 class TranslationFive
 {
