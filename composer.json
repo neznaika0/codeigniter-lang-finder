@@ -6,8 +6,11 @@
         "nikic/php-parser": "^5.3"
     },
     "require-dev": {
-        "codeigniter4/framework": "^4.5",
         "codeigniter/coding-standard": "^1.7",
+        "codeigniter4/framework": "^4.5",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^11.2"
     },
     "license": "MIT",
@@ -31,7 +34,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
     },
     "scripts": {
         "cs": [
@@ -42,6 +48,8 @@
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/php-cs-fixer fix --ansi --verbose --diff"
         ],
+        "phpstan:baseline": "vendor/bin/phpstan analyse --ansi --generate-baseline=phpstan-baseline.php",
+        "phpstan:check": "vendor/bin/phpstan analyse --verbose --ansi",
         "test": "vendor/bin/phpunit"
     }
 }

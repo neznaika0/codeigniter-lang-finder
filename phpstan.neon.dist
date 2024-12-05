@@ -1,0 +1,24 @@
+includes:
+	- phpstan-baseline.php
+parameters:
+	bootstrapFiles:
+		- vendor/codeigniter4/framework/system/Test/bootstrap.php
+	scanDirectories:
+		- vendor/codeigniter4/framework/system/Helpers
+	phpVersion: 80100
+	tmpDir: build/phpstan
+	level: 6
+	paths:
+		- src
+		- tests
+	dynamicConstantNames:
+		- APP_NAMESPACE
+		- CI_DEBUG
+		- ENVIRONMENT
+	checkMissingCallableSignature: true
+	treatPhpDocTypesAsCertain: false
+	strictRules:
+		allRules: false
+		disallowedLooseComparison: true
+		booleansInConditions: true
+		matchingInheritedMethodNames: true
