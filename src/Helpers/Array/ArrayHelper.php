@@ -10,6 +10,11 @@ final class ArrayHelper
 {
     /**
      * Setting nested value.
+     *
+     * @param array<int|string, mixed> $fromKeys
+     * @param array<int|string, mixed> $rootArray
+     *
+     * @return array<int|string, mixed>
      */
     public static function setNestedValue(array $fromKeys, mixed $lastArrayValue, array $rootArray = []): array
     {
@@ -34,7 +39,10 @@ final class ArrayHelper
 
     /**
      * Get nested value.
-     * NOTE: The "null" value can match the value of the array `$array['key] = null`
+     * NOTE: The "null" value can match the value of the array `$array['key'] = null`
+     *
+     * @param array<int|string, mixed>  $inputArray
+     * @param array<int|string, string> $fromKeys
      */
     public static function getNestedValue(array $inputArray, array $fromKeys): mixed
     {

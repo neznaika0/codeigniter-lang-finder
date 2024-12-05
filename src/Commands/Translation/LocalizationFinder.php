@@ -12,6 +12,7 @@ use Config\App;
 use InvalidArgumentException;
 use Neznaika0\LangFinder\Helpers\Array\ArrayHelper as ExtraArrayHelper;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
@@ -197,7 +198,9 @@ class LocalizationFinder extends BaseCommand
     /**
      * @param SplFileInfo|string $file
      *
-     * @return array<string, array>
+     * @return1 array<string, array>
+     *
+     * @return array{foundLanguageKeys: array<string, mixed>, badLanguageKeys: list<mixed>}
      */
     private function findTranslationsInFile($file): array
     {
@@ -278,6 +281,12 @@ class LocalizationFinder extends BaseCommand
             if ($langKeyArgs !== null) {
                 if ($langKeyArgs instanceof Array_) {
                     foreach ($langKeyArgs->items as $langKeyIndex => $langKeyArg) {
+                        if (! $langKeyArg->key instanceof Expr || ! property_exists($langKeyArg->key, 'value')) {
+                            $langKeyPossibleArgs[] = $langKeyIndex;
+
+                            continue;
+                        }
+
                         $langKeyPossibleArgs[] = $langKeyArg->key->value ?? $langKeyIndex;
                     }
                 } else {
@@ -292,7 +301,7 @@ class LocalizationFinder extends BaseCommand
                     $foundLanguageKeys[$languageFileName][$phraseKeys[0]] = $this->appendLangArgs($langKey, $langKeyPossibleArgs);
                 }
             } else {
-                if (ExtraArrayHelper::getNestedValue($foundLanguageKeys[$languageFileName], $phraseKeys)) {
+                if (is_string(ExtraArrayHelper::getNestedValue($foundLanguageKeys[$languageFileName], $phraseKeys))) {
                     $childKeys = ExtraArrayHelper::setNestedValue($phraseKeys, $this->appendLangArgs(ExtraArrayHelper::getNestedValue($foundLanguageKeys[$languageFileName], $phraseKeys), $langKeyPossibleArgs));
                 } else {
                     $childKeys = ExtraArrayHelper::setNestedValue($phraseKeys, $this->appendLangArgs($langKey, $langKeyPossibleArgs));
@@ -307,6 +316,8 @@ class LocalizationFinder extends BaseCommand
 
     /**
      * Possible placeholders are stored as split string "File.key[separator]{0} {1} {var}"
+     *
+     * @param list<string> $langArgs
      */
     private function appendLangArgs(string $langValue, array $langArgs): string
     {
@@ -338,6 +349,9 @@ class LocalizationFinder extends BaseCommand
         return $file->getExtension() !== 'php';
     }
 
+    /**
+     * @param array<string, array<string, string>> $language
+     */
     private function templateFile(array $language = []): string
     {
         if ($language !== []) {
@@ -353,7 +367,7 @@ class LocalizationFinder extends BaseCommand
             return $this->replaceArraySyntax($code);
         }
 
-        return <<<PHP
+        return <<<'PHP'
             <?php
 
             return [];
@@ -402,6 +416,10 @@ class LocalizationFinder extends BaseCommand
 
     /**
      * Convert multi arrays to specific CLI table rows (flat array)
+     *
+     * @param array<int|string, string> $array
+     *
+     * @return list<string>
      */
     private function arrayToTableRows(string $langFileName, array $array): array
     {

@@ -139,6 +139,9 @@ final class LocalizationFinderTest extends CIUnitTestCase
         $this->assertTrue($this->getPrivateMethodInvoker($langFinder, 'isIgnoredFile')($dirForLocale));
     }
 
+    /**
+     * @return array<string, array<string, mixed>|string>
+     */
     private function getActualTranslationOneKeys(): array
     {
         return [
@@ -152,6 +155,9 @@ final class LocalizationFinderTest extends CIUnitTestCase
         ];
     }
 
+    /**
+     * @return array<string, array<string, mixed>|string>
+     */
     private function getActualTranslationThreeKeys(): array
     {
         return [
@@ -185,6 +191,9 @@ final class LocalizationFinderTest extends CIUnitTestCase
         ];
     }
 
+    /**
+     * @return array<string, array<string, mixed>|string>
+     */
     private function getActualTranslationFourKeys(): array
     {
         return [
@@ -195,6 +204,9 @@ final class LocalizationFinderTest extends CIUnitTestCase
         ];
     }
 
+    /**
+     * @return array<string, array<string, mixed>|string>
+     */
     private function getActualTranslationFiveKeys(): array
     {
         return [
@@ -206,6 +218,9 @@ final class LocalizationFinderTest extends CIUnitTestCase
         ];
     }
 
+    /**
+     * @return array<string, array<string, mixed>|string>
+     */
     private function getActualTranslationCyrillicKeys(): array
     {
         return [
