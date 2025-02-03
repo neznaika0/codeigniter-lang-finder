@@ -48,7 +48,7 @@
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/php-cs-fixer fix --ansi --verbose --diff"
         ],
-        "phpstan:baseline": "vendor/bin/phpstan analyse --ansi --generate-baseline=phpstan-baseline.php",
+        "phpstan:baseline": "vendor/bin/phpstan analyse --ansi --generate-baseline=phpstan-baseline.php --allow-empty-baseline",
         "phpstan:check": "vendor/bin/phpstan analyse --verbose --ansi",
         "test": "vendor/bin/phpunit"
     }
