@@ -31,7 +31,7 @@ final class ArrayHelperTest extends CIUnitTestCase
         $this->assertSame(['a' => 'A', 'b' => 'B', 'c' => 'C'], ArrayHelper::getNestedValue($array, ['foo', 'bar', 'baz']));
         $this->assertSame(
             ['baz' => ['a' => 'A', 'b' => 'B', 'c' => 'C'], 'nullable' => null, 'wrong' => false, 'empty' => ''],
-            ArrayHelper::getNestedValue($array, ['foo', 'bar'])
+            ArrayHelper::getNestedValue($array, ['foo', 'bar']),
         );
         $this->assertNull(ArrayHelper::getNestedValue($array, ['foo', 'bar', 'error']));
         $this->assertFalse(ArrayHelper::getNestedValue($array, ['foo', 'bar', 'wrong']));

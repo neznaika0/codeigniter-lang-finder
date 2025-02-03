@@ -86,7 +86,7 @@ class LocalizationFinder extends BaseCommand
             if (! in_array($optionLocale, config(App::class)->supportedLocales, true)) {
                 CLI::error(
                     'Error: "' . $optionLocale . '" is not supported. Supported locales: '
-                    . implode(', ', config(App::class)->supportedLocales)
+                    . implode(', ', config(App::class)->supportedLocales),
                 );
 
                 return EXIT_USER_INPUT;
@@ -135,7 +135,7 @@ class LocalizationFinder extends BaseCommand
         [
             'foundLanguageKeys' => $foundLanguageKeys,
             'badLanguageKeys'   => $badLanguageKeys,
-            'countFiles'        => $countFiles
+            'countFiles'        => $countFiles,
         ] = $this->findLanguageKeysInFiles($files);
         ksort($foundLanguageKeys);
 
