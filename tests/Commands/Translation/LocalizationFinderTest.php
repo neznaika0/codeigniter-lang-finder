@@ -156,6 +156,64 @@ final class LocalizationFinderTest extends CIUnitTestCase
         $this->assertStringContainsString($this->getActualTableWithBadKeys(), $this->getStreamFilterBuffer());
     }
 
+    public function testAddNewKeysToEndArray(): void
+    {
+        $this->makeLocaleDirectory();
+
+        command('lang:finder');
+
+        $langFile = self::$languageTestPath . self::$locale . '/TranslationThree.php';
+        $lines    = file($langFile, FILE_SKIP_EMPTY_LINES);
+
+        foreach ($lines as $index => $line) {
+            if (str_contains($line, 'TranslationThree.alerts.CANCELED')) {
+                unset($lines[$index]);
+            }
+
+            if (str_contains($line, 'TranslationThree.formErrors.edit.INVALID_TEXT')) {
+                unset($lines[$index]);
+            }
+        }
+
+        $code = implode('', $lines);
+        file_put_contents($langFile, $code);
+
+        command('lang:finder');
+
+        $langKeys = require $langFile;
+        $expected = [
+            'alerts' => [
+                'created'       => 'TranslationThree.alerts.created',
+                'failed_insert' => 'TranslationThree.alerts.failed_insert',
+                'missing_keys'  => 'TranslationThree.alerts.missing_keys',
+                'Updated'       => 'TranslationThree.alerts.Updated',
+                'DELETED'       => 'TranslationThree.alerts.DELETED',
+                'CANCELED'      => 'TranslationThree.alerts.CANCELED',
+            ],
+            'formFields' => [
+                'new' => [
+                    'name'      => 'TranslationThree.formFields.new.name',
+                    'TEXT'      => 'TranslationThree.formFields.new.TEXT',
+                    'short_tag' => 'TranslationThree.formFields.new.short_tag',
+                ],
+                'edit' => [
+                    'name'      => 'TranslationThree.formFields.edit.name',
+                    'TEXT'      => 'TranslationThree.formFields.edit.TEXT',
+                    'short_tag' => 'TranslationThree.formFields.edit.short_tag',
+                ],
+            ],
+            'formErrors' => [
+                'edit' => [
+                    'empty_name'        => 'TranslationThree.formErrors.edit.empty_name',
+                    'missing_short_tag' => 'TranslationThree.formErrors.edit.missing_short_tag',
+                    'INVALID_TEXT'      => 'TranslationThree.formErrors.edit.INVALID_TEXT',
+                ],
+            ],
+        ];
+
+        $this->assertSame($expected, $langKeys);
+    }
+
     public function testIsIgnoredFile(): void
     {
         $langFinder = new LocalizationFinder(service('logger'), service('commands'));

@@ -175,7 +175,7 @@ class LocalizationFinder extends BaseCommand
             if ($this->showNew) {
                 $tableRows = array_merge($this->arrayToTableRows($langFileName, $languageDiff), $tableRows);
             } else {
-                $newLanguageKeys = array_replace_recursive($foundLanguageKeys[$langFileName], $languageStoredKeys);
+                $newLanguageKeys = array_replace_recursive($languageStoredKeys, $languageDiff);
 
                 if ($languageDiff !== []) {
                     if (file_put_contents($languageFilePath, $this->templateFile($newLanguageKeys)) === false) {
