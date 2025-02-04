@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
     backupGlobals="false"
     beStrictAboutOutputDuringTests="true"
-    bootstrap="vendor/codeigniter4/framework/system/Test/bootstrap.php"
+    bootstrap="./tests/bootstrap.php"
     cacheDirectory="build/.phpunit.cache"
     colors="true"
     columns="max"
