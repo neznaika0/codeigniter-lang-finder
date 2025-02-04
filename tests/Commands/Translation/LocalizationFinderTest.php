@@ -24,7 +24,7 @@ final class LocalizationFinderTest extends CIUnitTestCase
         parent::setUp();
 
         self::$locale           = config(App::class)->defaultLocale;
-        self::$languageTestPath = SUPPORTPATH . 'Language' . DIRECTORY_SEPARATOR;
+        self::$languageTestPath = SUPPORTPATH . 'Language/';
     }
 
     protected function tearDown(): void
@@ -34,11 +34,20 @@ final class LocalizationFinderTest extends CIUnitTestCase
         $this->clearGeneratedFiles();
     }
 
+    public function testWithEmptyDirOption(): void
+    {
+        $this->makeLocaleDirectory();
+
+        command('lang:finder --dir --lang-dir');
+
+        $this->assertTranslationsExistAndHaveTranslatedKeys();
+    }
+
     public function testNew(): void
     {
         $this->makeLocaleDirectory();
 
-        command('lang:find');
+        command('lang:finder');
 
         $this->assertTranslationsExistAndHaveTranslatedKeys();
     }
@@ -47,7 +56,7 @@ final class LocalizationFinderTest extends CIUnitTestCase
     {
         $this->makeLocaleDirectory();
 
-        command('lang:find');
+        command('lang:finder');
 
         $this->assertTranslationsExistAndHaveTranslatedKeys();
     }
@@ -62,7 +71,7 @@ final class LocalizationFinderTest extends CIUnitTestCase
         self::$locale = config(App::class)->supportedLocales[0];
         $this->makeLocaleDirectory();
 
-        command('lang:find --dir Translation --locale ' . self::$locale);
+        command('lang:finder --dir tests/_support/Sources/Translation --locale ' . self::$locale);
 
         $appConfig->supportedLocales = $supportedLocales;
 
@@ -74,29 +83,56 @@ final class LocalizationFinderTest extends CIUnitTestCase
         self::$locale = 'test_locale_incorrect';
         $this->makeLocaleDirectory();
 
-        $status = service('commands')->run('lang:find', [
-            'dir'    => 'Translation',
+        $status = service('commands')->run('lang:finder', [
+            'dir'    => 'tests/_support/Sources/Translation',
             'locale' => self::$locale,
         ]);
 
         $this->assertSame(EXIT_USER_INPUT, $status);
     }
 
-    public function testUpdateWithEmptyDirOption(): void
-    {
-        $this->makeLocaleDirectory();
-
-        command('lang:find --dir');
-
-        $this->assertTranslationsExistAndHaveTranslatedKeys();
-    }
-
     public function testUpdateWithIncorrectDirOption(): void
     {
         $this->makeLocaleDirectory();
 
-        $status = service('commands')->run('lang:find', [
-            'dir' => 'Translation/NotExistFolder',
+        $status = service('commands')->run('lang:finder', [
+            'dir' => 'tests/_support/Sources/Translation/NotExistFolder',
+        ]);
+
+        $this->assertSame(EXIT_USER_INPUT, $status);
+    }
+
+    public function testUpdateWithLangDirOption(): void
+    {
+        mkdir(ROOTPATH . 'tests/_support/Sources/Language', 0755, true);
+
+        command('lang:finder --lang-dir tests/_support/Sources/Language');
+
+        $this->assertFileExists(ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationOne.php');
+        $this->assertFileExists(ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationThree.php');
+        $this->assertFileExists(ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/Translation-Four.php');
+        $this->assertFileExists(ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationFive.php');
+        $this->assertFileExists(ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/Статья.php');
+
+        $translationOneKeys      = require ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationOne.php';
+        $translationThreeKeys    = require ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationThree.php';
+        $translationFourKeys     = require ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/Translation-Four.php';
+        $translationFiveKeys     = require ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationFive.php';
+        $translationCyrillicKeys = require ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/Статья.php';
+
+        $this->assertSame($translationOneKeys, $this->getActualTranslationOneKeys());
+        $this->assertSame($translationThreeKeys, $this->getActualTranslationThreeKeys());
+        $this->assertSame($translationFourKeys, $this->getActualTranslationFourKeys());
+        $this->assertSame($translationFiveKeys, $this->getActualTranslationFiveKeys());
+        $this->assertSame($translationCyrillicKeys, $this->getActualTranslationCyrillicKeys());
+    }
+
+    public function testUpdateWithIncorrectLangDirOption(): void
+    {
+        $this->makeLocaleDirectory();
+
+        $status = service('commands')->run('lang:finder', [
+            'lang-dir' => 'tests/_support/Sources/Translation/NotExistFolder/Language',
         ]);
 
         $this->assertSame(EXIT_USER_INPUT, $status);
@@ -106,7 +142,7 @@ final class LocalizationFinderTest extends CIUnitTestCase
     {
         $this->makeLocaleDirectory();
 
-        command('lang:find --dir Translation --show-new');
+        command('lang:finder --dir tests/_support/Sources/Translation --show-new');
 
         $this->assertStringContainsString($this->getActualTableWithNewKeys(), $this->getStreamFilterBuffer());
     }
@@ -115,7 +151,7 @@ final class LocalizationFinderTest extends CIUnitTestCase
     {
         $this->makeLocaleDirectory();
 
-        command('lang:find --dir Translation --verbose');
+        command('lang:finder --dir tests/_support/Sources/Translation --verbose');
 
         $this->assertStringContainsString($this->getActualTableWithBadKeys(), $this->getStreamFilterBuffer());
     }
@@ -328,6 +364,13 @@ final class LocalizationFinderTest extends CIUnitTestCase
             self::$languageTestPath . self::$locale . '/Статья.php',
             self::$languageTestPath . self::$locale,
             self::$languageTestPath . '/test_locale_incorrect',
+            ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationOne.php',
+            ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationThree.php',
+            ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/Translation-Four.php',
+            ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/TranslationFive.php',
+            ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale . '/Статья.php',
+            ROOTPATH . 'tests/_support/Sources/Language/' . self::$locale,
+            ROOTPATH . 'tests/_support/Sources/Language/',
         ];
 
         foreach ($filePaths as $path) {
