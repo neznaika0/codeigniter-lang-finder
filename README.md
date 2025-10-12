@@ -1,5 +1,10 @@
 # Языковые переводы для CodeIgniter 4
 
+[![GitHub Release (latest by date)](https://img.shields.io/github/v/release/neznaika0/codeigniter-lang-finder)](https://packagist.org/packages/neznaika0/codeigniter-lang-finder)
+![PHP](https://img.shields.io/badge/PHP-%5E8.2-blue)
+[![GitHub License](https://img.shields.io/github/license/neznaika0/codeigniter-lang-finder)](https://github.com/neznaika0/codeigniter-lang-finder/blob/dev/LICENSE)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/neznaika0/codeigniter-lang-finder/pulls)
+
 Этот пакет предоставляет команды для работы с переводами в CodeIgniter 4, упрощая процесс поиска и обновления языковых ключей.
 **Важно**: команда не выполняет автоматический перевод фраз, а лишь помогает организовать и обновить ключи.
 
@@ -7,7 +12,9 @@
 
 ## Установка
 
-
+```console
+composer require neznaika0/codeigniter-lang-finder
+```
 
 ## Обычный процесс разработки
 
@@ -174,7 +181,7 @@ php spark lang:finder --locale de --dir ./app/Modules/ --lang-dir ./app/Modules/
 ## Особенности и ограничения
 
 - Для поиска требуется библиотека `nikic/php-parser`. Обычно она нужка только для разработки, но здесь это прямая зависимость.
-- После выполнения возможно понадобится форматирование, например, `php-cs-fixer`
+- После выполнения возможно понадобится форматирование, например, `php-cs-fixer`. Формат сохранения массива не настраивается, по умолчанию `return []`.
 - Файлы переводов полностью перезаписываются. Если вы используете форматирование или комментарии, они могут быть потеряны. Следует проверять на соответствие вашему стилю.
 - Если перевод `File.text...{0}` или `Ваше имя {name}` имеет подсказку типа, то при новом заполнителе он не обновится. Если вы еще не переводили файл, перед повторным запуском команды можете его удалить.
 
