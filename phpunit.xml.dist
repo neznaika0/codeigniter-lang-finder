@@ -5,7 +5,7 @@
     backupGlobals="false"
     beStrictAboutOutputDuringTests="true"
     bootstrap="./tests/bootstrap.php"
-    cacheDirectory="build/.phpunit.cache"
+    cacheDirectory="build/phpunit/cache"
     colors="true"
     columns="max"
     executionOrder="random"
@@ -17,6 +17,15 @@
             <directory suffix=".php">src/</directory>
         </include>
     </source>
+    <coverage
+        pathCoverage="false"
+        ignoreDeprecatedCodeUnits="true"
+        disableCodeCoverageIgnore="false"
+    >
+        <report>
+            <html outputDirectory="build/phpunit/coverage/html"/>
+        </report>
+    </coverage>
     <testsuites>
 		<testsuite name="main">
 			<directory>tests/</directory>
