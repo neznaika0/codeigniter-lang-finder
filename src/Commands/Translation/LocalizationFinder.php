@@ -355,7 +355,7 @@ class LocalizationFinder extends BaseCommand
 
     private function isIgnoredFile(SplFileInfo $file): bool
     {
-        if ($file->isDir() || $this->isSubDirectory((string) $file->getRealPath(), $this->languagePath)) {
+        if ($file->isDir() || $this->isSubDirectory($this->languagePath, (string) $file->getRealPath())) {
             return true;
         }
 
@@ -473,7 +473,7 @@ class LocalizationFinder extends BaseCommand
             throw new InvalidArgumentException('The "$directory" or "$rootDirectory" parameters should not be an empty value');
         }
 
-        return str_starts_with($directory, $rootDirectory);
+        return str_starts_with($rootDirectory, $directory);
     }
 
     /**
