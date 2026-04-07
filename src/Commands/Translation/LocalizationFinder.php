@@ -218,7 +218,7 @@ class LocalizationFinder extends BaseCommand
     /**
      * @param SplFileInfo|string $file
      *
-     * @return array<string, array>
+     * @return array<string, array<int|string, mixed>>
      * @return array{foundLanguageKeys: array<string, mixed>, badLanguageKeys: list<mixed>}
      */
     private function findTranslationsInFile($file): array
@@ -255,9 +255,6 @@ class LocalizationFinder extends BaseCommand
         }
 
         foreach ($functions as $function) {
-            /**
-             * @var ?String_
-             */
             $langStringKey = isset($function?->args[0]->value) ? $function->args[0]->value : null;
 
             // We are only looking for string keys.
@@ -292,9 +289,6 @@ class LocalizationFinder extends BaseCommand
             $langKeyPossibleArgs = [];
             $foundLanguageKeys[$languageFileName] ??= [];
 
-            /**
-             * @var ?Array_
-             */
             $langKeyArgs = $function->args[1]->value ?? null;
 
             if ($langKeyArgs !== null) {
@@ -356,12 +350,12 @@ class LocalizationFinder extends BaseCommand
             natsort($langArgs);
         }
 
-        return $oldLangArgs[0] . ($langArgs !== [] ? self::ARGS_SEPARATOR . implode(' ', $langArgs) : '');
+        return $oldLangArgs[0] . self::ARGS_SEPARATOR . implode(' ', $langArgs);
     }
 
     private function isIgnoredFile(SplFileInfo $file): bool
     {
-        if ($file->isDir() || $this->isSubDirectory((string) $file->getRealPath(), $this->languagePath)) {
+        if ($file->isDir() || $this->isSubDirectory($this->languagePath, (string) $file->getRealPath())) {
             return true;
         }
 
@@ -442,9 +436,9 @@ class LocalizationFinder extends BaseCommand
     /**
      * Convert multi arrays to specific CLI table rows (flat array)
      *
-     * @param array<int|string, string> $array
+     * @param array<int|string, list<string>|string> $array
      *
-     * @return list<string>
+     * @return list<list<string>>
      */
     private function arrayToTableRows(string $langFileName, array $array): array
     {
@@ -457,9 +451,7 @@ class LocalizationFinder extends BaseCommand
                 continue;
             }
 
-            if (is_string($value)) {
-                $rows[] = [$langFileName, $value];
-            }
+            $rows[] = [$langFileName, $value];
         }
 
         return $rows;
@@ -481,13 +473,13 @@ class LocalizationFinder extends BaseCommand
             throw new InvalidArgumentException('The "$directory" or "$rootDirectory" parameters should not be an empty value');
         }
 
-        return str_starts_with($directory, $rootDirectory);
+        return str_starts_with($rootDirectory, $directory);
     }
 
     /**
      * @param list<SplFileInfo> $files
      *
-     * @return         array<string, array|int>
+     * @return         array<string, array<int|string, mixed>|int>
      * @phpstan-return array{'foundLanguageKeys': array<string, array<string, string>>, 'badLanguageKeys': array<int, array<int, string>>, 'countFiles': int}
      */
     private function findLanguageKeysInFiles(array $files): array

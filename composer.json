@@ -3,15 +3,17 @@
     "description": "Find the translation keys in your project",
     "type": "library",
     "require": {
+        "php": "^8.2",
         "nikic/php-parser": "^5.3"
     },
     "require-dev": {
         "codeigniter/coding-standard": "^1.7",
+        "codeigniter/phpstan-codeigniter": "^1.5",
         "codeigniter4/framework": "^4.5",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^11.2"
+        "phpunit/phpunit": "^12"
     },
     "license": "MIT",
     "autoload": {

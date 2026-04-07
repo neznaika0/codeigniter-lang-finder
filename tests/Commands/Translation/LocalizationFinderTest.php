@@ -233,6 +233,16 @@ final class LocalizationFinderTest extends CIUnitTestCase
         $this->assertTrue($this->getPrivateMethodInvoker($langFinder, 'isIgnoredFile')($dirForLocale));
     }
 
+    public function testIsSubDirectory(): void
+    {
+        $status = service('commands')->run('lang:finder', [
+            'dir' => 'tests/_support/Language',
+        ]);
+
+        $this->assertSame(EXIT_USER_INPUT, $status);
+        $this->assertMatchesRegularExpression('/Error: Directory ".*" restricted to scan./', $this->getStreamFilterBuffer());
+    }
+
     /**
      * @return array<string, array<string, mixed>|string>
      */

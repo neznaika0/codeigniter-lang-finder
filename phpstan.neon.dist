@@ -16,9 +16,11 @@ parameters:
 		- CI_DEBUG
 		- ENVIRONMENT
 	checkMissingCallableSignature: true
-	treatPhpDocTypesAsCertain: false
+	treatPhpDocTypesAsCertain: true
 	strictRules:
-		allRules: false
-		disallowedLooseComparison: true
-		booleansInConditions: true
-		matchingInheritedMethodNames: true
+		allRules: true
+	ignoreErrors:
+		-
+			identifier: staticMethod.dynamicCall
+			paths:
+				- tests/*
